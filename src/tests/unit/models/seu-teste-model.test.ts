@@ -1,22 +1,40 @@
-// template para criação dos testes de cobertura da camada de model
+import { expect } from 'chai';
+import sinon from 'sinon';
+import CarModel from '../../../models/CarModel';
+import { Model } from 'mongoose';
+import { carMock, carMockWithId } from '../../mocks/carMocks';
 
+describe('Car Model', () => {
+  const carModel = new CarModel();
 
-// import * as sinon from 'sinon';
-// import chai from 'chai';
-// const { expect } = chai;
+	before(() => {
+		sinon.stub(Model, 'create').resolves(carMockWithId);
+		sinon.stub(Model, 'findOne').resolves(carMockWithId);
+	});
 
-// describe('Sua descrição', () => {
+	after(() => {
+		sinon.restore();
+	});
 
-//   before(async () => {
-//     sinon
-//       .stub()
-//       .resolves();
-//   });
+  describe('método create', () => {
+		it('happy route', async () => {
+			const newCar = await carModel.create(carMock);
+			expect(newCar).to.be.deep.equal(carMockWithId);
+		});
+	});
 
-//   after(()=>{
-//     sinon.restore();
-//   })
+	describe('método readOne', () => {
+		it('happy route', async () => {
+			const carFound = await carModel.readOne('62cf1fc6498565d94eba52cd');
+			expect(carFound).to.be.deep.equal(carMockWithId);
+		});
 
-//   it('', async () => {});
-
-// });
+		it('error', async () => {
+			try {
+				await carModel.readOne('1234567890');
+			} catch (error: any) {
+				expect(error.message).to.be.eq('InvalidMongoId');
+			}
+		});
+	});
+});
