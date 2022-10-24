@@ -4,7 +4,7 @@ import { ZodError } from 'zod';
 import { ErrorTypes } from '../../../errors/catalog';
 import CarModel from '../../../models/CarModel';
 import CarService from '../../../services/CarServices';
-import { carMock, carMockWithId } from '../../mocks/carMocks';
+import { allCarsMock, carMock, carMockWithId } from '../../mocks/carMocks';
 
 describe('Car Service', () => {
   const carModel = new CarModel();
@@ -12,6 +12,7 @@ describe('Car Service', () => {
 
   before(() => {
     sinon.stub(carModel, 'create').resolves(carMockWithId);
+    sinon.stub(carModel, 'read').resolves(allCarsMock);
     sinon.stub(carModel, 'readOne')
       // na chamada de index 0 `carModel.readOne` vai responder um fakeCar
       .onCall(0).resolves(carMockWithId)
@@ -40,6 +41,13 @@ describe('Car Service', () => {
   });
 
   describe('método readOne', () => {
+    it('happy route', async () => {
+      const carsFound = await carService.read();
+      expect(carsFound.length).to.be.equal(3);
+    });
+  });
+
+  describe('método read', () => {
     it('happy route', async () => {
       const carCreated = await carService.readOne(carMockWithId._id);
       expect(carCreated).to.be.deep.equal(carMockWithId);

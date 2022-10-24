@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 import { NextFunction, Request, Response } from 'express';
-import { carMock, carMockWithId } from '../../mocks/carMocks';
+import { allCarsMock, carMock, carMockWithId } from '../../mocks/carMocks';
 import CarController from '../../../controllers/CarControllers';
 import CarService from '../../../services/CarServices';
 import CarModel from '../../../models/CarModel';
@@ -18,6 +18,7 @@ describe('Frame Controller', () => {
 
   before(() => {
     sinon.stub(carService, 'create').resolves(carMock);
+    sinon.stub(carService, 'read').resolves(allCarsMock);
     sinon.stub(carService, 'readOne').resolves(carMock);
 
     res.status = sinon.stub().returns(res);
@@ -39,6 +40,15 @@ describe('Frame Controller', () => {
     });
   });
 
+  describe('método read', () => {
+    it('happy route', async () => {
+      await carController.read(req, res);
+
+      expect((res.status as sinon.SinonStub).calledWith(200)).to.be.true;
+      expect((res.json as sinon.SinonStub).calledWith(allCarsMock)).to.be.true;
+    });    
+  });
+
   describe('método readOne', () => {
     it('happy route', async () => {
       // como fizemos o dublê da service o valor do `req.params.id` não vai chegar na model
@@ -48,19 +58,6 @@ describe('Frame Controller', () => {
 
       expect((res.status as sinon.SinonStub).calledWith(200)).to.be.true;
       expect((res.json as sinon.SinonStub).calledWith(carMock)).to.be.true;
-    });
-
-    it('error', async () => {
-      // let error;
-      // try {
-        req.params = { id: '1234567890' };
-        await carController.readOne(req, res);
-      // } catch (err: any) {
-      //   err.message = 'Id must have 24 hexadecimal characters'
-      // }
-
-      expect((res.status as sinon.SinonStub).calledWith(400)).to.be.true;
-      // expect((res.json as sinon.SinonStub).calledWith(carMock)).to.be.true;
-    });
+    });    
   });
 });

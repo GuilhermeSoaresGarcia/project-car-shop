@@ -2,13 +2,14 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 import CarModel from '../../../models/CarModel';
 import { Model } from 'mongoose';
-import { carMock, carMockWithId } from '../../mocks/carMocks';
+import { carMock, allCarsMock, carMockWithId } from '../../mocks/carMocks';
 
 describe('Car Model', () => {
   const carModel = new CarModel();
 
 	before(() => {
 		sinon.stub(Model, 'create').resolves(carMockWithId);
+		sinon.stub(Model, 'find').resolves(allCarsMock);
 		sinon.stub(Model, 'findOne').resolves(carMockWithId);
 	});
 
@@ -20,6 +21,13 @@ describe('Car Model', () => {
 		it('happy route', async () => {
 			const newCar = await carModel.create(carMock);
 			expect(newCar).to.be.deep.equal(carMockWithId);
+		});
+	});
+
+	describe('método read', () => {
+		it('happy route', async () => {
+			const carsFound = await carModel.read();
+			expect(carsFound.length).to.be.equal(3);
 		});
 	});
 
