@@ -32,6 +32,7 @@ export default class CarService implements IService<ICar> {
 
   public async update(_id: string, obj: ICar): Promise<ICar> {
     const result = await this._car.update(_id, obj);
+    if (Object.keys(obj).length === 0) throw new Error(ErrorTypes.EmptyBody);
     if (!result) throw new Error(ErrorTypes.EntityNotFound);
     return result;
   }
