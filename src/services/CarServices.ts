@@ -29,4 +29,10 @@ export default class CarService implements IService<ICar> {
     if (!result) throw new Error(ErrorTypes.EntityNotFound);
     return result;
   }
+
+  public async update(_id: string, obj: ICar): Promise<ICar> {
+    const result = await this._car.update(_id, obj);
+    if (!result) throw new Error(ErrorTypes.EntityNotFound);
+    return result;
+  }
 }

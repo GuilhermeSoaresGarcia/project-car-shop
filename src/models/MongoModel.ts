@@ -13,18 +13,18 @@ export default abstract class MongoModel<T> implements IModel<T> {
     return this._model.create({ ...obj });
   }
 
+  public async read(): Promise<T[]> {
+    return this._model.find({});
+  }
+
   public async readOne(_id: string): Promise<T | null> {
     if (!isValidObjectId(_id)) throw Error(ErrorTypes.InvalidMongoId);
     return this._model.findOne({ _id });
   }
 
-  public async read(): Promise<T[]> {
-    return this._model.find({});
-  }
-
-  public async update(_id: string, obj: T): Promise<T | null> {
+  public async update(_id: string, obj: any): Promise<T | null> { // como utilizar o tipo correto?
     if (!isValidObjectId(_id)) throw Error(ErrorTypes.InvalidMongoId);
-    return this._model.updateOne({ _id }, { obj }) as unknown as T;
+    return this._model.findByIdAndUpdate({ _id }, { ...obj }) as unknown as T;   
   }
 
   public async delete(_id: string): Promise<T | null> {
