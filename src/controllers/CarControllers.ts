@@ -26,7 +26,7 @@ export default class CarController {
 
   public async read(
     _req: Request,
-    res: Response<any>,
+    res: Response<ICar[]>,
   ) {
     const result = await this._service.read();
     return res.status(200).json(result);
@@ -36,7 +36,11 @@ export default class CarController {
     req: Request,
     res: Response<any>,
   ) {
-    const result = await this._service.readOne(req.params.id);
+    const { id } = req.params;
+    // if (id.length < 24) {
+    //   return res.status(400).json({ error: 'Id must have 24 hexadecimal characters' });
+    // }
+    const result = await this._service.readOne(id);
     return res.status(200).json(result);
   }
 }
